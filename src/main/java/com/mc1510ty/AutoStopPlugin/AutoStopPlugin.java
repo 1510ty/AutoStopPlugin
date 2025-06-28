@@ -17,9 +17,16 @@ public class AutoStopPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        saveDefaultConfig(); // config.yml がなければ生成
+        saveDefaultConfig();
         reloadConfigFromFile();
         Bukkit.getPluginManager().registerEvents(this, this);
+
+        // 起動時にプレイヤーがいなければシャットダウンスケジュール開始
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
+            getLogger().info("No players online on startup. Scheduling shutdown...");
+            scheduleShutdown();
+        }
+
         getLogger().info("AutoShutdown enabled. Shutdown delay: " + (shutdownDelayTicks / 20L) + " seconds");
     }
 
