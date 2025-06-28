@@ -1,0 +1,4 @@
+name: AutoShutdown
+version: 1.0.0
+main: com.mc1510ty.AutoStopPlugin.AutoStopPlugin
+api-version: 1.21
