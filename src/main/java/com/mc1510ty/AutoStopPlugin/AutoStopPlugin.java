@@ -2,7 +2,6 @@ package com.mc1510ty.AutoStopPlugin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -13,7 +12,7 @@ import org.bukkit.scheduler.BukkitTask;
 public class AutoStopPlugin extends JavaPlugin implements Listener {
 
     private BukkitTask shutdownTask = null;
-    private long shutdownDelayTicks = 20L * 60; // デフォルトは60秒（20 * 秒数）
+    private long shutdownDelayTicks = 20L * 60; // デフォルトは60秒
 
     @Override
     public void onEnable() {
@@ -21,7 +20,6 @@ public class AutoStopPlugin extends JavaPlugin implements Listener {
         reloadConfigFromFile();
         Bukkit.getPluginManager().registerEvents(this, this);
 
-        // 起動時にプレイヤーがいなければシャットダウンスケジュール開始
         if (Bukkit.getOnlinePlayers().isEmpty()) {
             getLogger().info("No players online on startup. Scheduling shutdown...");
             scheduleShutdown();
