@@ -1,6 +1,7 @@
 package com.mc1510ty.AutoStopPlugin;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,12 +13,14 @@ import org.bukkit.scheduler.BukkitTask;
 public class AutoStopPlugin extends JavaPlugin implements Listener {
 
     private BukkitTask shutdownTask = null;
-    private final long SHUTDOWN_DELAY_TICKS = 20L * 60; // 60秒
+    private long shutdownDelayTicks = 20L * 60; // デフォルトは60秒（20 * 秒数）
 
     @Override
     public void onEnable() {
+        saveDefaultConfig(); // config.yml がなければ生成
+        reloadConfigFromFile();
         Bukkit.getPluginManager().registerEvents(this, this);
-        getLogger().info("AutoShutdown enabled.");
+        getLogger().info("AutoShutdown enabled. Shutdown delay: " + (shutdownDelayTicks / 20L) + " seconds");
     }
 
     @Override
@@ -28,13 +31,19 @@ public class AutoStopPlugin extends JavaPlugin implements Listener {
         getLogger().info("AutoShutdown disabled.");
     }
 
+    private void reloadConfigFromFile() {
+        FileConfiguration config = getConfig();
+        int seconds = config.getInt("stop-seconds", 60);
+        shutdownDelayTicks = seconds * 20L;
+    }
+
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getOnlinePlayers().isEmpty()) {
                 scheduleShutdown();
             }
-        }, 20L); // 1秒後にチェック（ログアウト処理後）
+        }, 20L); // ログアウト処理後にチェック（1秒遅延）
     }
 
     @EventHandler
@@ -45,7 +54,7 @@ public class AutoStopPlugin extends JavaPlugin implements Listener {
     private void scheduleShutdown() {
         if (shutdownTask != null && !shutdownTask.isCancelled()) return;
 
-        getLogger().info("No players online. Server will shut down in 60 seconds...");
+        getLogger().info("No players online. Server will shut down in " + (shutdownDelayTicks / 20L) + " seconds...");
         shutdownTask = Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getOnlinePlayers().isEmpty()) {
                 getLogger().info("Still no players. Shutting down now.");
@@ -53,7 +62,7 @@ public class AutoStopPlugin extends JavaPlugin implements Listener {
             } else {
                 getLogger().info("Players joined. Shutdown cancelled.");
             }
-        }, SHUTDOWN_DELAY_TICKS);
+        }, shutdownDelayTicks);
     }
 
     private void cancelShutdown() {
