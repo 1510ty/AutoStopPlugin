@@ -27,7 +27,7 @@ public class AutoStopPlugin extends JavaPlugin implements Listener {
             scheduleShutdown();
         }
 
-        getLogger().info("AutoShutdown enabled. Shutdown delay: " + (shutdownDelayTicks / 20L) + " seconds");
+        getLogger().info("AutoStopPlugin enabled. Shutdown delay: " + (shutdownDelayTicks / 20L) + " seconds");
     }
 
     @Override
@@ -35,7 +35,7 @@ public class AutoStopPlugin extends JavaPlugin implements Listener {
         if (shutdownTask != null) {
             shutdownTask.cancel();
         }
-        getLogger().info("AutoShutdown disabled.");
+        getLogger().info("AutoStopPlugin disabled.");
     }
 
     private void reloadConfigFromFile() {
